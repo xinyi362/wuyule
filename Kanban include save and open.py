@@ -26,14 +26,16 @@ import random, string, sys
 # from TaskDetail import Ui_TaskDetailDialog
 
 from TaskDetail_ui import TaskDetailDialog
+from popup import CreateBoard
 
 # ******************************************************************************
 
-app = QApplication(sys.argv)
+"""app = QApplication(sys.argv)
 
 with open(r"styles.qss") as f:
     style = f.read()
-    app.setStyleSheet(style)
+    app.setStyleSheet(style)"""
+
 
 class MainWindow(QMainWindow):
     """ Main window of application"""
@@ -52,7 +54,7 @@ class MainWindow(QMainWindow):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.openMenuAction = self.fileMenu.addAction("&Open")
         self.openMenuAction.triggered.connect(
-            self.on_open_action)    # New-style connect!
+            self.on_open_action)  # New-style connect!
         self.fileMenu.addSeparator()
         self.quitMenuAction = self.fileMenu.addAction("&Quit")
         self.quitMenuAction.triggered.connect(self.on_quit_action)
@@ -107,12 +109,12 @@ class MainWindow(QMainWindow):
         self.addToolBar(self.mainToolBar)
         self.mainLayout.addWidget(self.mainToolBar)
 
-        #create searchbar
+        # create searchbar
         self.searchbar = QLineEdit()
-        #have it say something before text is entered
+        # have it say something before text is entered
         self.searchbar.setPlaceholderText("Search for a Task...")
-        self.searchbar.setFixedWidth(475) #set width
-        #when text is changed do a search
+        self.searchbar.setFixedWidth(475)  # set width
+        # when text is changed do a search
         self.searchbar.textChanged.connect(self.searchForTask)
         self.mainLayout.addWidget(self.searchbar)
 
@@ -126,13 +128,13 @@ class MainWindow(QMainWindow):
         columnHeadings = ["Backlog", "In progress", "Blocked", "Completed"]
         self.tab.setHorizontalHeaderLabels(columnHeadings)
 
-        #give column headings a fixed width
+        # give column headings a fixed width
         for x in range(4):
             self.tab.setColumnWidth(x, 400)
 
         # Set Kanban board title
         self.tabbedWidget.addTab(self.tab, "Untitled Project")
-        self.mainLayout.addWidget(self.tabbedWidget)   
+        self.mainLayout.addWidget(self.tabbedWidget)
 
         # Set mainLayout as the central widget
         self.mainWidget = QWidget()
@@ -140,7 +142,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.mainWidget)
 
         # Disable Edit
-        self.tabbedWidget.widget(self.tabbedWidget.currentIndex()).setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tabbedWidget.widget(self.tabbedWidget.currentIndex()).setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
 
         # Create Lists to save task information
         self.taskNameList = [['']]
@@ -150,19 +153,18 @@ class MainWindow(QMainWindow):
         self.taskLogList = [['']]
 
         # Create Flag to check if WIP is enabled
-        self.flagWIPEnabled = [[0,0,0,0]]
-
+        self.flagWIPEnabled = [[0, 0, 0, 0]]
 
     # --------------------------------------------------------------------------
 
-    def search_item(self,column):
+    def search_item(self, column):
         """Count the number of non empty items in a column"""
         tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
         rowCount = tableWidget.rowCount()
         itemCount = 0
         row = 0
         while (row < rowCount):
-            item = tableWidget.item(row,column)
+            item = tableWidget.item(row, column)
             if item:
                 itemCount += 1
             row += 1
@@ -172,17 +174,17 @@ class MainWindow(QMainWindow):
 
     def searchForTask(self, searchMatch):
 
-        #set current index of tab so it works with all projects
+        # set current index of tab so it works with all projects
         tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
-        
-        #reset search before each one
+
+        # reset search before each one
         tableWidget.setCurrentItem(None)
 
-        #search for matching items
+        # search for matching items
         matching_items = tableWidget.findItems(searchMatch, Qt.MatchContains)
 
-        #if a match is found, highlight it in the table
-        #if a match isn't found, do nothing
+        # if a match is found, highlight it in the table
+        # if a match isn't found, do nothing
         if matching_items:
             item = matching_items[0]
             tableWidget.setCurrentItem(item)
@@ -215,7 +217,7 @@ class MainWindow(QMainWindow):
                 tableWidget.setHorizontalHeaderItem(columnIndex, newHeader)
                 # Show over WIP limit warning
                 if int(itemCount) > int(numList[1]):
-                    tableWidget.horizontalHeaderItem(columnIndex).setForeground(QBrush(QColor(255,0,0)))
+                    tableWidget.horizontalHeaderItem(columnIndex).setForeground(QBrush(QColor(255, 0, 0)))
             columnIndex += 1
         return
 
@@ -226,9 +228,9 @@ class MainWindow(QMainWindow):
         tabIndex = self.tabbedWidget.currentIndex()
         self.tab = QTableWidget(0, 4, self.tabbedWidget)
         columnHeadings = ["Backlog", "In progress", "Blocked", "Completed"]
-        self.tabbedWidget.addTab(self.tab,"New Project")
+        self.tabbedWidget.addTab(self.tab, "New Project")
         self.tab.setHorizontalHeaderLabels(columnHeadings)
-        self.flagWIPEnabled.append([0,0,0,0])
+        self.flagWIPEnabled.append([0, 0, 0, 0])
         self.taskNameList.append([''])
         self.taskMemberList.append([''])
         self.startTimeList.append([''])
@@ -249,7 +251,7 @@ class MainWindow(QMainWindow):
         tabIndex = self.tabbedWidget.currentIndex()
         tabName, ok = QInputDialog.getText(self, "Project Name", "Enter project name: ")
         if tabName and ok:
-            self.tabbedWidget.setTabText(tabIndex,tabName)
+            self.tabbedWidget.setTabText(tabIndex, tabName)
         return
 
     # --------------------------------------------------------------------------
@@ -257,7 +259,8 @@ class MainWindow(QMainWindow):
     def close_tab(self):
         """Close current project"""
         w = QWidget()
-        reply = QMessageBox.question(w, 'Close Project', 'Do you want to close this project?', QMessageBox.Close | QMessageBox.Cancel, QMessageBox.Cancel)
+        reply = QMessageBox.question(w, 'Close Project', 'Do you want to close this project?',
+                                     QMessageBox.Close | QMessageBox.Cancel, QMessageBox.Cancel)
         if reply == QMessageBox.Close:
             tabIndex = self.tabbedWidget.currentIndex()
             self.tabbedWidget.removeTab(tabIndex)
@@ -277,8 +280,8 @@ class MainWindow(QMainWindow):
 
     def on_open_action(self):
         """Handler for 'Open' action"""
-        fileName = QFileDialog.getOpenFileName(self, "Open File", ".",("*.xml"))
-        f = open(fileName[0],'rb')
+        fileName = QFileDialog.getOpenFileName(self, "Open File", ".", ("*.xml"))
+        f = open(fileName[0], 'rb')
         Openfiletext = f.read()
         Openfiletext = Openfiletext.rstrip()
         Openfiletext = Openfiletext.decode("utf-8")
@@ -289,102 +292,102 @@ class MainWindow(QMainWindow):
             self.tab.setColumnWidth(x, 400)
 
         return
+
     # --------------------------------------------------------------------------
     def on_saveAs_action(self):
         """Handler for 'SaveAs' action"""
         tabIndex = self.tabbedWidget.currentIndex()
         Tabname = self.tabbedWidget.tabText(tabIndex)
-        self.tablenum= self.tabbedWidget.currentWidget()
-        rowCount=self.tablenum.rowCount()
+        self.tablenum = self.tabbedWidget.currentWidget()
+        rowCount = self.tablenum.rowCount()
         columnCount = self.tablenum.columnCount()
 
         labels = []
         for column in range(columnCount):
             it = self.tablenum.horizontalHeaderItem(column)
-            labels.append(str(column+1) if it is None else it.text())
+            labels.append(str(column + 1) if it is None else it.text())
         labels = str(labels)
 
-        SaveData = 'self.tab = QTableWidget('+str(rowCount)+','+str(columnCount)+ ','+ 'self.tabbedWidget)'+'\n'
-        SaveData = SaveData+ 'columnHeadings = '+labels+'\n'
-        SaveData = SaveData+ 'self.tabbedWidget.addTab(self.tab,"'+Tabname+'")'+'\n'
-        SaveData = SaveData+ 'self.tab.setHorizontalHeaderLabels(columnHeadings)'+'\n'
-        SaveData = SaveData+ 'self.flagWIPEnabled.append([0,0,0,0])'+'\n'
+        SaveData = 'self.tab = QTableWidget(' + str(rowCount) + ',' + str(
+            columnCount) + ',' + 'self.tabbedWidget)' + '\n'
+        SaveData = SaveData + 'columnHeadings = ' + labels + '\n'
+        SaveData = SaveData + 'self.tabbedWidget.addTab(self.tab,"' + Tabname + '")' + '\n'
+        SaveData = SaveData + 'self.tab.setHorizontalHeaderLabels(columnHeadings)' + '\n'
+        SaveData = SaveData + 'self.flagWIPEnabled.append([0,0,0,0])' + '\n'
 
-        SaveData = SaveData+ 'NewTabnum = self.tabbedWidget.count()-1'+'\n'
-        SaveData = SaveData+ 'self.tabbedWidget.setCurrentIndex(NewTabnum)'+'\n'
-        SaveData = SaveData+ 'tabIndex = self.tabbedWidget.currentIndex()'+'\n'
-        SaveData = SaveData+ 'self.tablenum= self.tabbedWidget.currentWidget()'+'\n'
-        SaveData = SaveData+ 'rowCount=self.tablenum.rowCount()'+'\n'
+        SaveData = SaveData + 'NewTabnum = self.tabbedWidget.count()-1' + '\n'
+        SaveData = SaveData + 'self.tabbedWidget.setCurrentIndex(NewTabnum)' + '\n'
+        SaveData = SaveData + 'tabIndex = self.tabbedWidget.currentIndex()' + '\n'
+        SaveData = SaveData + 'self.tablenum= self.tabbedWidget.currentWidget()' + '\n'
+        SaveData = SaveData + 'rowCount=self.tablenum.rowCount()' + '\n'
         TaskIndex = 1;
 
-        SaveData = SaveData +'self.taskNameList.append(["",'       
+        SaveData = SaveData + 'self.taskNameList.append(["",'
         for row in range(rowCount):
-            taskName=self.taskNameList[tabIndex][TaskIndex]
-            SaveData = SaveData +'"'+taskName+'",'
-            TaskIndex =TaskIndex+ 1;
-        SaveData = SaveData[0:len(SaveData)-1]
-        SaveData = SaveData + '])'+ '\n'
+            taskName = self.taskNameList[tabIndex][TaskIndex]
+            SaveData = SaveData + '"' + taskName + '",'
+            TaskIndex = TaskIndex + 1;
+        SaveData = SaveData[0:len(SaveData) - 1]
+        SaveData = SaveData + '])' + '\n'
         TaskIndex = 1;
 
-        SaveData = SaveData +'self.taskMemberList.append(["",'       
+        SaveData = SaveData + 'self.taskMemberList.append(["",'
         for row in range(rowCount):
-            taskName=self.taskMemberList[tabIndex][TaskIndex]
-            SaveData = SaveData +'"'+taskName+'",'
-            TaskIndex =TaskIndex+ 1;
-        SaveData = SaveData[0:len(SaveData)-1]
-        SaveData = SaveData + '])'+ '\n'
+            taskName = self.taskMemberList[tabIndex][TaskIndex]
+            SaveData = SaveData + '"' + taskName + '",'
+            TaskIndex = TaskIndex + 1;
+        SaveData = SaveData[0:len(SaveData) - 1]
+        SaveData = SaveData + '])' + '\n'
         TaskIndex = 1;
 
-        SaveData = SaveData +'self.startTimeList.append(["",'       
+        SaveData = SaveData + 'self.startTimeList.append(["",'
         for row in range(rowCount):
-            startTime=self.startTimeList[tabIndex][TaskIndex]
-            SaveData = SaveData +'"'+startTime+'",'
-            TaskIndex =TaskIndex+ 1;
-        SaveData = SaveData[0:len(SaveData)-1]
-        SaveData = SaveData + '])'+ '\n'
+            startTime = self.startTimeList[tabIndex][TaskIndex]
+            SaveData = SaveData + '"' + startTime + '",'
+            TaskIndex = TaskIndex + 1;
+        SaveData = SaveData[0:len(SaveData) - 1]
+        SaveData = SaveData + '])' + '\n'
         TaskIndex = 1;
 
-        SaveData = SaveData +'self.dueTimeList.append(["",'       
+        SaveData = SaveData + 'self.dueTimeList.append(["",'
         for row in range(rowCount):
-            dueTime=self.dueTimeList[tabIndex][TaskIndex]
-            SaveData = SaveData +'"'+dueTime+'",'
-            TaskIndex =TaskIndex+ 1;
-        SaveData = SaveData[0:len(SaveData)-1]
-        SaveData = SaveData + '])'+ '\n'
+            dueTime = self.dueTimeList[tabIndex][TaskIndex]
+            SaveData = SaveData + '"' + dueTime + '",'
+            TaskIndex = TaskIndex + 1;
+        SaveData = SaveData[0:len(SaveData) - 1]
+        SaveData = SaveData + '])' + '\n'
         TaskIndex = 1;
 
-        SaveData = SaveData +'self.taskLogList.append(["",'       
+        SaveData = SaveData + 'self.taskLogList.append(["",'
         for row in range(rowCount):
-            taskLog=self.taskLogList[tabIndex][TaskIndex]
-            SaveData = SaveData +'"'+taskLog+'",'
-            TaskIndex =TaskIndex+ 1;
-        SaveData = SaveData[0:len(SaveData)-1]
-        SaveData = SaveData + '])'+ '\n'
-
+            taskLog = self.taskLogList[tabIndex][TaskIndex]
+            SaveData = SaveData + '"' + taskLog + '",'
+            TaskIndex = TaskIndex + 1;
+        SaveData = SaveData[0:len(SaveData) - 1]
+        SaveData = SaveData + '])' + '\n'
 
         for row in range(rowCount):
             for column in range(columnCount):
-                widgetItem = self.tablenum.item(row,column)
-                if(widgetItem and widgetItem.text):
-                    SaveData = SaveData+'tableItem = QTableWidgetItem()'+'\n'
-                    SaveData = SaveData + 'tableItem.setText("' + widgetItem.text()+'")'+'\n'
-                    SaveData = SaveData +'self.tab.setItem('+str(row)+','+str(column)+', tableItem)'+'\n'
+                widgetItem = self.tablenum.item(row, column)
+                if (widgetItem and widgetItem.text):
+                    SaveData = SaveData + 'tableItem = QTableWidgetItem()' + '\n'
+                    SaveData = SaveData + 'tableItem.setText("' + widgetItem.text() + '")' + '\n'
+                    SaveData = SaveData + 'self.tab.setItem(' + str(row) + ',' + str(column) + ', tableItem)' + '\n'
                 else:
                     SaveData = SaveData
         print(SaveData)
 
         options = QFileDialog.Options()
-        fileName, _= QFileDialog.getSaveFileName(self, 
-            "Save File", "", "XML Files(*.xml)", options = options)       
+        fileName, _ = QFileDialog.getSaveFileName(self,
+                                                  "Save File", "", "XML Files(*.xml)", options=options)
         if fileName:
-                    with open(fileName, 'w') as f:
-                         f.write(SaveData)
+            with open(fileName, 'w') as f:
+                f.write(SaveData)
         print("saving ", fileName[0])
 
+        return
 
-        return 
-
-    # --------------------------------------------------------------------------
+        # --------------------------------------------------------------------------
 
     def current_row_index(self):
         """Return current row index"""
@@ -409,9 +412,9 @@ class MainWindow(QMainWindow):
         columnIndex = self.current_column_index()
         columnCount = tableWidget.columnCount()
         text = tableWidget.currentItem().text()
-        if columnIndex < columnCount-1:
-            tableWidget.setItem(rowIndex,columnIndex+1,QTableWidgetItem(text))
-            tableWidget.takeItem(rowIndex,columnIndex)
+        if columnIndex < columnCount - 1:
+            tableWidget.setItem(rowIndex, columnIndex + 1, QTableWidgetItem(text))
+            tableWidget.takeItem(rowIndex, columnIndex)
         self.check_WIP()
         return
 
@@ -436,7 +439,7 @@ class MainWindow(QMainWindow):
         preferencesDialog.lineEditControl.setText(self.randomString)
 
         result = preferencesDialog.exec()
-        if(result == QDialog.Accepted):
+        if (result == QDialog.Accepted):
             print("You pressed OK")
 
             # Process updated preferences
@@ -452,7 +455,7 @@ class MainWindow(QMainWindow):
     def task_detail(self):
         """Set up task detail window"""
         taskDetail = TaskDetailDialog()
-        taskIndex = self.current_row_index()+1
+        taskIndex = self.current_row_index() + 1
         tabIndex = self.tabbedWidget.currentIndex()
         if self.taskNameList[tabIndex][taskIndex]:
             taskDetail.lineEditTask.setText(self.taskNameList[tabIndex][taskIndex])
@@ -467,7 +470,7 @@ class MainWindow(QMainWindow):
             print(self.taskLogList[tabIndex])
         taskDetail.exec()
         if taskDetail.flagSave == 1:
-            self.taskNameList[tabIndex][taskIndex]= taskDetail.taskName
+            self.taskNameList[tabIndex][taskIndex] = taskDetail.taskName
             self.taskMemberList[tabIndex][taskIndex] = taskDetail.taskMember
             self.startTimeList[tabIndex][taskIndex] = taskDetail.startTime
             self.dueTimeList[tabIndex][taskIndex] = taskDetail.dueTime
@@ -475,7 +478,7 @@ class MainWindow(QMainWindow):
             task = QTableWidgetItem(self.taskNameList[tabIndex][taskIndex])
             tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
             currentItem = tableWidget.currentItem()
-            tableWidget.setItem(taskIndex-1, currentItem.column(), task)
+            tableWidget.setItem(taskIndex - 1, currentItem.column(), task)
 
         self.check_WIP()
         return
@@ -508,7 +511,7 @@ class MainWindow(QMainWindow):
                 columnHeader = column.text()
             else:
                 columnHeader = ""
-            columnList.append(str(i+1) + ': ' + columnHeader)
+            columnList.append(str(i + 1) + ': ' + columnHeader)
             i += 1
         return columnList
 
@@ -520,10 +523,11 @@ class MainWindow(QMainWindow):
         tabIndex = self.tabbedWidget.currentIndex()
         columnIndex = tableWidget.currentColumn()
         if self.flagWIPEnabled[tabIndex][columnIndex] == 0:
-            limitWIP, ok = QInputDialog.getInt(self,"Set WIP Limit","Enter WIP limit: ",0)
+            limitWIP, ok = QInputDialog.getInt(self, "Set WIP Limit", "Enter WIP limit: ", 0)
             if ok and limitWIP:
                 itemCount = self.search_item(columnIndex)
-                newHeaderText = tableWidget.horizontalHeaderItem(columnIndex).text() + "\n(" + str(itemCount) + "/" + str(limitWIP) + ")"
+                newHeaderText = tableWidget.horizontalHeaderItem(columnIndex).text() + "\n(" + str(
+                    itemCount) + "/" + str(limitWIP) + ")"
                 newHeader = QTableWidgetItem(newHeaderText)
                 tableWidget.setHorizontalHeaderItem(columnIndex, newHeader)
                 self.flagWIPEnabled[tabIndex][columnIndex] = 1
@@ -562,19 +566,20 @@ class MainWindow(QMainWindow):
         self.check_WIP()
         return
 
-    # --------------------------------------------------------------------------
-
     def add_column(self):
         """Add a new column before selected column"""
         tabIndex = self.tabbedWidget.currentIndex()
         items = self.get_column()
-        column, ok = QInputDialog.getItem(self,"Add Column", "Select column: ",items)
+        column, ok = QInputDialog.getItem(self, "Add Column", "Select column: ", items)
         if ok and column:
             index = items.index(column)
             tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
             tableWidget.insertColumn(index)
-            self.flagWIPEnabled[tabIndex].insert(index,0)
-            self.tab.setColumnWidth(index, 400)
+            self.flagWIPEnabled[tabIndex].insert(index, 0)
+            header, ok = QInputDialog.getText(self, "Column Name", "Enter column name: ")
+            if ok and header:
+                nameItem = QTableWidgetItem(header)
+                tableWidget.setHorizontalHeaderItem(index, nameItem)
 
         self.check_WIP()
         # print(self.flagWIPEnabled)
@@ -586,12 +591,12 @@ class MainWindow(QMainWindow):
         """Delete a selected column"""
         tabIndex = self.tabbedWidget.currentIndex()
         items = self.get_column()
-        column, ok = QInputDialog.getItem(self,"Delete Column", "Select column: ",items)
+        column, ok = QInputDialog.getItem(self, "Delete Column", "Select column: ", items)
         if ok and column:
             index = items.index(column)
             tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
             tableWidget.removeColumn(index)
-            del self.flagWIPEnabled[tabIndex][index-1]
+            del self.flagWIPEnabled[tabIndex][index - 1]
             print(self.flagWIPEnabled[tabIndex])
         self.check_WIP()
         return
@@ -605,17 +610,12 @@ class MainWindow(QMainWindow):
         if ok and column:
             index = items.index(column)
             tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
-            header, ok = QInputDialog.getText(self,"Column Name", "Enter column name: ")
+            header, ok = QInputDialog.getText(self, "Column Name", "Enter column name: ")
             if ok and header:
                 nameItem = QTableWidgetItem(header)
-                tableWidget.setHorizontalHeaderItem(index,nameItem)
+                tableWidget.setHorizontalHeaderItem(index, nameItem)
         self.check_WIP()
         return
-
-    # --------------------------------------------------------------------------
-
-
-
 
     # --------------------------------------------------------------------------
 
@@ -633,8 +633,8 @@ class MainWindow(QMainWindow):
         print(taskIndex)
         tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
         tableWidget.insertRow(taskIndex)
-        task = QTableWidgetItem(self.taskNameList[tabIndex][taskIndex+1])
-        tableWidget.setItem(taskIndex,0,task)
+        task = QTableWidgetItem(self.taskNameList[tabIndex][taskIndex + 1])
+        tableWidget.setItem(taskIndex, 0, task)
         self.check_WIP()
         print(self.taskNameList)
         print(self.flagWIPEnabled)
@@ -646,10 +646,13 @@ class MainWindow(QMainWindow):
         """Delete selected task"""
         tabIndex = self.tabbedWidget.currentIndex()
         rowCount = self.tabbedWidget.widget(self.tabbedWidget.currentIndex()).rowCount()
-        row, ok = QInputDialog.getInt(self,"Delete Task", "Select row: ",0,1,rowCount)
-        if ok and row:
+        row, ok = QInputDialog.getInt(self, "Delete Task", "The Deleted Task Row is: " "\n",
+                                      self.current_row_index() + 1, self.current_row_index() + 1,
+                                      self.current_row_index() + 1)
+        if ok and row and row != 0:
             tableWidget = self.tabbedWidget.widget(self.tabbedWidget.currentIndex())
-            tableWidget.removeRow(row-1)
+            tableWidget.removeRow(self.current_row_index())
+
             del self.taskNameList[tabIndex][row]
             del self.taskMemberList[tabIndex][row]
             del self.startTimeList[tabIndex][row]
@@ -660,9 +663,28 @@ class MainWindow(QMainWindow):
             print(self.startTimeList[tabIndex])
             print(self.dueTimeList[tabIndex])
             print(self.taskLogList[tabIndex])
+
         self.check_WIP()
+        print(f"{row} --> rows")
+        print(f"{rowCount} --> rcount")
         return
 
+    # ------------------------------------------------------------------------
+
+    def create_board(self):
+        """ Creating a new board"""
+
+        CreateNewBoard = CreateBoard()
+
+        output = CreateNewBoard.exec()
+
+        if (result == QDialog.Accepted):
+            print("OK")
+
+        else:
+            print("Invalid Entry")
+
+        return
 
 
 # ******************************************************************************
@@ -670,10 +692,13 @@ class MainWindow(QMainWindow):
 
 # Main program
 if __name__ == "__main__":
-
-    mainWindow = MainWindow()
-    mainWindow.show()
-
-    exit(app.exec())
+    app = QApplication([])
+    with open(r"styles.qss") as f:
+        style = f.read()
+        app.setStyleSheet(style)
+    window = MainWindow()
+    # window.show()
+    # window.create_board()
+    sys.exit(app.exec())
 
 # ******************************************************************************
