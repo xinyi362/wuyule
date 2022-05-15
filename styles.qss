@@ -1,0 +1,204 @@
+* { /* styles everything */
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 20px;
+}
+
+QMenu { /* menu at the top of the gui - this styles the options when a menu item is clicked */
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+QMenu::item:selected { /* changes colour when an item selected */
+    background-color: #c7c7c7;
+    border-radius: 5px;
+}
+
+QMenu::separator { /* separates the options so they aren't as close together */
+    height: 1px;
+    background: white;
+    margin-left: 2px;
+    margin-right: 2px;
+    height: 15px;
+}
+
+QMenuBar { /* the physical menu bar at the top of the gui */
+    spacing: 10px; 
+    font-size: 20px;
+}
+
+QMenuBar::item { /* each of the options on the menu bar */
+    padding: 1px 4px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+QMenuBar::item:selected { /* selected item (i.e. hovering over) */
+    background: #c7c7c7;
+}
+
+QMenuBar::item:pressed {
+    background: #a8a8a8;
+}
+
+QTableWidget {
+    font-size: 20px;
+}
+
+QTableView {
+    background-color: white;
+}
+
+QTableView QTableCornerButton::section {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+}
+
+QTableWidget::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
+    border: 1px solid #bfcde4;
+}
+
+QTableWidget::item:selected {
+    color: black;
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
+}
+
+QHeaderView::section {
+    font-size: 20px;
+    height: 50px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+    border-radius: 1px;
+}
+
+QHeaderView::section:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fafafa, stop: 0.4 #f4f4f4, stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+}
+    
+
+QMainWindow {
+    background: white;
+}
+    
+
+QTabWidget::pane { 
+    border-top: 1px solid #C2C7CB;
+}
+
+QTabWidget::tab-bar {
+    left: 5px;
+}
+
+QTabBar::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+    border: 2px solid #C2C7CB;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width: 40ex;
+    padding: 10px;
+    font-size: 20px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fafafa, stop: 0.4 #f4f4f4, stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+    font-weight: bold;
+}
+
+QTabBar::tab:selected {
+    border-color: #9B9B9B;
+    border-bottom-color: #C2C7CB;
+    font-weight: bold;
+}
+    
+
+QToolBar {
+    spacing: 10px;
+    padding-left: 5px;
+}
+    
+
+QToolButton { 
+    border: 2px solid #8f8f91;
+    border-radius: 10px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+    font-size: 20px;
+    height: 40px;
+    width: 100px;
+}
+
+QToolButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #dadbde, stop: 1 #f6f7fa);
+}
+
+QToolButton:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fafafa, stop: 0.4 #f4f4f4, stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+    font-weight: bold;
+}
+
+QScrollBar:horizontal {
+    border: 2px solid grey;
+    background: white;
+    height: 15px;
+    margin: 0px 20px 0 20px;
+}
+    
+QScrollBar::handle:horizontal {
+    background: #c7c7c7;
+    min-width: 20px;
+}
+    
+QScrollBar::add-line:horizontal {
+    border: 2px solid grey;
+    background: white;
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 2px solid grey;
+    background: white;
+    width: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QComboBox
+{
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    border-style: solid;
+    border: 1px solid #1e1e1e;
+    border-radius: 5px;
+    padding: 1px 0px 1px 20px;
+    font-size: 20px;
+}
+
+QPushButton {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+    border-style: outset;
+    border-radius: 10px;
+    border-color: black;
+    border-width: 1px;
+    min-width: 5em;
+    padding: 5px;
+}
+
+QPushButton::hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fafafa, stop: 0.4 #f4f4f4, stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+    font-weight: bold;
+}
+
+QCalendarWidget QToolButton {
+  	border: 1px solid #8f8f91;
+    border-radius: 5px;
+    font-size: 15px;
+    height: 30px;
+    width: 60px;
+    color: black;
+  }
+
+QToolButton::menu-indicator{
+    image:none;
+}
